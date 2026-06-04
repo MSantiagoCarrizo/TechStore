@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { CartContext } from '../context/CartContext'
 import { db } from '../services/firebase'
 import { Loader } from './Loader'
@@ -32,20 +32,21 @@ export const Checkout = () => {
 
         setLoading(true)
 
-        const orden = {
-            comprador: {
-                nombre: name,
-                apellido: lastname,
-                direccion: address,
-                email: email
+        const order = {
+            buyer: {
+                name,
+                lastname,
+                address,
+                email
             },
-            productos: cart,
-            total: total()
+            products: cart,
+            total: total(),
+            date: serverTimestamp()
         }
 
-        const ordenes = collection(db, 'orders')
+        const orders = collection(db, 'orders')
 
-        addDoc(ordenes, orden)
+        addDoc(orders, order)
 
             .then((res) => {
                 setOrderId(res.id)
